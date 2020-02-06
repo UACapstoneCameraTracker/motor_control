@@ -22,7 +22,7 @@ class GimbalMode(Enum):
 
 
 def move_to(position: Tuple[int, int], mode: GimbalMode) -> bool:
-    raise NotImplementedError()
+    pass
 
 def reset_position() -> bool:
     return move_to((0, 0), GimbalMode.ABSOLUTE)
