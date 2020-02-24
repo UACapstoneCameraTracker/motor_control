@@ -1,12 +1,14 @@
 """
 This module provides low-level controls to the pitch and yaw motors.
 """
+from gpiozero import PWMLED
 
-PITCH_MOTOR_PWM_PIN = 32
-YAW_MOTOR_PWM_PIN = 33
+PITCH_MOTOR_PWM_PIN = PWMLED(13)
+YAW_MOTOR_PWM_PIN = PWMLED(12)
 
 def move_to_angle(pin, angle: float) -> bool:
-    pass
+    pin.value = angle/200 * 0.2 + 0.04
+
 
 
 def move_yaw(angle: float) -> bool:
