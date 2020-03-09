@@ -11,6 +11,10 @@ from .motor import (
     move_yaw
     )
 
+CURRENT_YAW_ANGLE = 100
+CURRENT_PITCH_ANGLE = 100
+HORIZONTAL_FOV = 46.5
+VERTICAL_FOV = 34.5
 
 class GimbalMode(Enum):
     """Mode of the gimbal.
@@ -21,8 +25,19 @@ class GimbalMode(Enum):
     RELATIVE = 1
 
 
-def move_to(position: Tuple[int, int], mode: GimbalMode) -> bool:
-    pass
+def move_to(position: Tuple[int, int], mode: GimbalMode, imagesize: Tuple[int, int]) -> bool:
+    nonlocal CURRENT_PITCH_ANGLE
+    nonlocal CURRENT_YAW_ANGLE
+    if GimbalMode.RELATIVE:
+        yaw_diff = position[0] - imagesize[0]/2
+        pitch_diff = position[1] - imagesize[1]/2
+        CURRENT_PITCH_ANGLE += pitch_diff/imagesize[1] * VERTICAL_FOV
+        CURRENT_YAW_ANGLE += yaw_diff/imagesize[0] *  HORIZONTAL_FOV
+        move_pitch(CURRENT_PITCH_ANGLE)
+        move_yaw(CURRENT_YAW_ANGLE)
+    else:
+        CURRENT_YAW_ANGLE = position[0] + 100
+        CURRENT_PITCH_ANGLE = position[1] + 100
 
 def reset_position() -> bool:
-    return move_to((0, 0), GimbalMode.ABSOLUTE)
+    return move_to((0, 0), GimbalMode.ABSOLUTE, (640,480))
