@@ -26,8 +26,8 @@ class GimbalMode(Enum):
 
 
 def move_to(position: Tuple[int, int], mode: GimbalMode, imagesize: Tuple[int, int]) -> bool:
-    nonlocal CURRENT_PITCH_ANGLE
-    nonlocal CURRENT_YAW_ANGLE
+    global CURRENT_PITCH_ANGLE
+    global CURRENT_YAW_ANGLE
     if GimbalMode.RELATIVE:
         yaw_diff = position[0] - imagesize[0]/2
         pitch_diff = position[1] - imagesize[1]/2
