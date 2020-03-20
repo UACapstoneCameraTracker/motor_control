@@ -7,6 +7,7 @@ PITCH_MOTOR_PWM_PIN = 12
 YAW_MOTOR_PWM_PIN = 13
 PINS = {12: PWMLED(12), 13: PWMLED(13)}
 
+
 def move_to_angle(pin, angle: float) -> float:
     value = angle / 200 * 0.2 + 0.04
     PINS[pin].value = value

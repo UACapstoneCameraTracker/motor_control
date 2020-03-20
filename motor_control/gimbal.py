@@ -38,9 +38,9 @@ def _constrain_angle(angle):
     return angle
 
 
-def _pos_to_angle(pos, pos_max):
+def _pos_to_angle(pos, pos_max, fov):
     d = pos - pos_max/2
-    angle = np.arctan(2 * np.tan(np.radians(HORIZONTAL_FOV/2)) / pos_max * d)
+    angle = np.arctan(2 * np.tan(np.radians(fov)) / pos_max * d)
     angle = np.degrees(angle)
     return angle
 
@@ -49,8 +49,8 @@ def move_to(position: Tuple[int, int], imagesize: Tuple[int, int]) -> bool:
     global current_pitch_angle
     global current_yaw_angle
 
-    yaw_angle = _pos_to_angle(position[0], imagesize[0])
-    pitch_angle = _pos_to_angle(position[1], imagesize[1])
+    yaw_angle = _pos_to_angle(position[0], imagesize[0], HORIZONTAL_FOV)
+    pitch_angle = _pos_to_angle(position[1], imagesize[1], VERTICAL_FOV)
 
     print(f'angle to turn: (x={yaw_angle}, y={pitch_angle})')
 
