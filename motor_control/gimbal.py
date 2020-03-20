@@ -1,6 +1,16 @@
 """
 The driver module of the gimbal. This module utilizes the functions in motor module,
 and provides an easy-to-use interface to control the gimbal movement.
+
+--------------------> x
+|
+|
+|
+|
+|
+v
+y
+
 """
 
 from typing import Tuple
@@ -41,6 +51,8 @@ def move_to(position: Tuple[int, int], imagesize: Tuple[int, int]) -> bool:
 
     yaw_angle = _pos_to_angle(position[0], imagesize[0])
     pitch_angle = _pos_to_angle(position[1], imagesize[1])
+
+    print(f'angle to turn: (x={yaw_angle}, y={pitch_angle})')
 
     current_yaw_angle = _constrain_angle(current_yaw_angle+yaw_angle)
     current_pitch_angle = _constrain_angle(current_pitch_angle+pitch_angle)
