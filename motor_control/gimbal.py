@@ -26,8 +26,39 @@ HORIZONTAL_FOV = 46.5
 VERTICAL_FOV = 34.5
 MAX_ANGLE = 120
 
-current_yaw_angle = 60
-current_pitch_angle = 60
+current_yaw_angle = MAX_ANGLE/2
+current_pitch_angle = MAX_ANGLE/2
+image_size = None
+
+
+def init_gimbal(imagesize: Tuple[int, int]):
+    global image_size
+    image_size = imagesize
+    reset_position()
+
+
+def move_to(position: Tuple[int, int]) -> bool:
+    global current_pitch_angle
+    global current_yaw_angle
+
+    yaw_angle = _pos_to_angle(position[0], image_size[0], HORIZONTAL_FOV)
+    pitch_angle = _pos_to_angle(position[1], image_size[1], VERTICAL_FOV)
+    print(f'angle to turn: (x={yaw_angle}, y={pitch_angle})')
+
+    current_yaw_angle = _constrain_angle(current_yaw_angle+yaw_angle)
+    current_pitch_angle = _constrain_angle(current_pitch_angle+pitch_angle)
+
+    move_yaw(current_yaw_angle)
+    move_pitch(current_pitch_angle)
+
+
+def reset_position() -> bool:
+    global current_yaw_angle, current_pitch_angle
+    current_yaw_angle = MAX_ANGLE/2
+    current_pitch_angle = MAX_ANGLE/2
+
+    move_yaw(current_yaw_angle)
+    move_pitch(current_pitch_angle)
 
 
 def _constrain_angle(angle):
@@ -43,27 +74,3 @@ def _pos_to_angle(pos, pos_max, fov):
     angle = np.arctan(2 * np.tan(np.radians(fov)) / pos_max * d)
     angle = np.degrees(angle)
     return angle
-
-
-def move_to(position: Tuple[int, int], imagesize: Tuple[int, int]) -> bool:
-    global current_pitch_angle
-    global current_yaw_angle
-
-    yaw_angle = _pos_to_angle(position[0], imagesize[0], HORIZONTAL_FOV)
-    pitch_angle = _pos_to_angle(position[1], imagesize[1], VERTICAL_FOV)
-
-    print(f'angle to turn: (x={yaw_angle}, y={pitch_angle})')
-
-    current_yaw_angle = _constrain_angle(current_yaw_angle+yaw_angle)
-    current_pitch_angle = _constrain_angle(current_pitch_angle+pitch_angle)
-
-    move_yaw(current_yaw_angle)
-    move_pitch(current_pitch_angle)
-
-
-def reset_position() -> bool:
-    current_yaw_angle = MAX_ANGLE/2
-    current_pitch_angle = MAX_ANGLE/2
-
-    move_yaw(current_yaw_angle)
-    move_pitch(current_pitch_angle)
