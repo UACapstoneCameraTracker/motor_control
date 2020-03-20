@@ -5,39 +5,53 @@ and provides an easy-to-use interface to control the gimbal movement.
 
 from typing import Tuple
 from enum import Enum
+import numpy as np
 
 from .motor import (
     move_pitch,
     move_yaw
-    )
+)
 
-CURRENT_YAW_ANGLE = 100
-CURRENT_PITCH_ANGLE = 100
 HORIZONTAL_FOV = 46.5
 VERTICAL_FOV = 34.5
+MAX_ANGLE = 120
 
-class GimbalMode(Enum):
-    """Mode of the gimbal.
-    Absolute: move the gimbal to the position relative to the origin.
-    Relative: move the gimbal to the position relative to the current gimbal position.
-    """
-    ABSOLUTE = 0
-    RELATIVE = 1
+current_yaw_angle = 60
+current_pitch_angle = 60
 
 
-def move_to(position: Tuple[int, int], mode: GimbalMode, imagesize: Tuple[int, int]) -> bool:
-    global CURRENT_PITCH_ANGLE
-    global CURRENT_YAW_ANGLE
-    if GimbalMode.RELATIVE:
-        yaw_diff = position[0] - imagesize[0]/2
-        pitch_diff = position[1] - imagesize[1]/2
-        CURRENT_PITCH_ANGLE += pitch_diff/imagesize[1] * VERTICAL_FOV
-        CURRENT_YAW_ANGLE += yaw_diff/imagesize[0] *  HORIZONTAL_FOV
-        move_pitch(CURRENT_PITCH_ANGLE)
-        move_yaw(CURRENT_YAW_ANGLE)
-    else:
-        CURRENT_YAW_ANGLE = position[0] + 100
-        CURRENT_PITCH_ANGLE = position[1] + 100
+def _constrain_angle(angle):
+    if angle <= 0:
+        return 0
+    if angle >= MAX_ANGLE:
+        return MAX_ANGLE
+    return angle
+
+
+def _pos_to_angle(pos, pos_max):
+    d = pos - pos_max/2
+    angle = np.arctan(2 * np.tan(np.radians(HORIZONTAL_FOV/2)) / pos_max * d)
+    angle = np.degrees(angle)
+    return angle
+
+
+def move_to(position: Tuple[int, int], imagesize: Tuple[int, int]) -> bool:
+    global current_pitch_angle
+    global current_yaw_angle
+
+    yaw_angle = _pos_to_angle(position[0], imagesize[0])
+    pitch_angle = _pos_to_angle(position[1], imagesize[1])
+
+    current_yaw_angle = _constrain_angle(current_yaw_angle+yaw_angle)
+    current_pitch_angle = _constrain_angle(current_pitch_angle+pitch_angle)
+
+    move_yaw(current_yaw_angle)
+    move_pitch(current_pitch_angle)
+
 
 def reset_position() -> bool:
-    return move_to((0, 0), GimbalMode.ABSOLUTE, (640,480))
+    current_yaw_angle = MAX_ANGLE/2
+    current_pitch_angle = MAX_ANGLE/2
+
+    move_yaw(current_yaw_angle)
+    move_pitch(current_pitch_angle)
