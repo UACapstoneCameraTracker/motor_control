@@ -2,15 +2,21 @@
 The driver module of the gimbal. This module utilizes the functions in motor module,
 and provides an easy-to-use interface to control the gimbal movement.
 
---------------------> x
-|
-|
+Image coordinate:
+--------------> x
 |
 |
 |
 v
 y
 
+Gimbal coordinate:
+y
+^
+|
+|
+|
+--------------> x
 """
 
 from typing import Tuple
@@ -37,12 +43,12 @@ def init_gimbal(imagesize: Tuple[int, int]):
     reset_position()
 
 
-def move_to(position: Tuple[int, int]) -> bool:
+def move_to(position: Tuple[int, int]):
     global current_pitch_angle
     global current_yaw_angle
 
     yaw_angle = _pos_to_angle(position[0], image_size[0], HORIZONTAL_FOV)
-    pitch_angle = _pos_to_angle(position[1], image_size[1], VERTICAL_FOV)
+    pitch_angle = -_pos_to_angle(position[1], image_size[1], VERTICAL_FOV)
     print(f'angle to turn: (x={yaw_angle}, y={pitch_angle})')
 
     current_yaw_angle = _constrain_angle(current_yaw_angle+yaw_angle)
@@ -52,7 +58,7 @@ def move_to(position: Tuple[int, int]) -> bool:
     move_pitch(current_pitch_angle)
 
 
-def reset_position() -> bool:
+def reset_position():
     global current_yaw_angle, current_pitch_angle
     current_yaw_angle = MAX_ANGLE/2
     current_pitch_angle = MAX_ANGLE/2
@@ -61,7 +67,7 @@ def reset_position() -> bool:
     move_pitch(current_pitch_angle)
 
 
-def _constrain_angle(angle):
+def _constrain_angle(angle: float) -> float:
     if angle <= 0:
         return 0
     if angle >= MAX_ANGLE:
@@ -69,7 +75,7 @@ def _constrain_angle(angle):
     return angle
 
 
-def _pos_to_angle(pos, pos_max, fov):
+def _pos_to_angle(pos: int, pos_max: int, fov: float) -> float:
     d = pos - pos_max/2
     angle = np.arctan(2 * np.tan(np.radians(fov)) / pos_max * d)
     angle = np.degrees(angle)
