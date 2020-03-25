@@ -2,25 +2,28 @@
 This module provides low-level controls to the pitch and yaw motors.
 """
 import time
-from gpiozero import PWMLED
+import pigpio
 
 PITCH_MOTOR_PWM_PIN = 12
 YAW_MOTOR_PWM_PIN = 13
-PINS = {12: PWMLED(12), 13: PWMLED(13)}
+PWM_FREQUENCY = 100
 
 SPEED_S_PER_DEGREE = 0.17 / 60
 TURNING_DELAY_ADDON = 0.01
 
-def move_to_angle(pin, angle: float) -> float:
-    value = 0.001 * angle + 0.08
-    PINS[pin].value = value
-    time.sleep(SPEED_S_PER_DEGREE * angle + TURNING_DELAY_ADDON)
-    return value
+
+pi = pigpio.pi()
+pi.set_PWM_frequency(PITCH_MOTOR_PWM_PIN, PWM_FREQUENCY)
+pi.set_PWM_frequency(YAW_MOTOR_PWM_PIN, PWM_FREQUENCY)
 
 
-def move_yaw(angle: float) -> float:
-    return move_to_angle(YAW_MOTOR_PWM_PIN, angle)
+def move_yaw(angle: float) -> int:
+    dc = int((-0.0005 * angle + 0.097) * 255)
+    pi.set_PWM_dutycycle(YAW_MOTOR_PWM_PIN, dc)
+    return dc
 
 
-def move_pitch(angle: float) -> float:
-    return move_to_angle(PITCH_MOTOR_PWM_PIN, angle)
+def move_pitch(angle: float) -> int:
+    dc = int((-0.0005 * angle + 0.102) * 255)
+    pi.set_PWM_dutycycle(PITCH_MOTOR_PWM_PIN, dc)
+    return dc
