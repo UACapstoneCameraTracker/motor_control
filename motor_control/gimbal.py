@@ -2,7 +2,7 @@
 The driver module of the gimbal. This module utilizes the functions in motor module,
 and provides an easy-to-use interface to control the gimbal movement.
 
-Image coordinate:
+coordinate:
 --------------> x
 |
 |
@@ -10,13 +10,6 @@ Image coordinate:
 v
 y
 
-Gimbal coordinate:
-y
-^
-|
-|
-|
---------------> x
 """
 
 from typing import Tuple
@@ -48,7 +41,7 @@ def move_to(position: Tuple[int, int]):
     global current_yaw_angle
 
     yaw_angle = _pos_to_angle(position[0], image_size[0], HORIZONTAL_FOV)
-    pitch_angle = -_pos_to_angle(position[1], image_size[1], VERTICAL_FOV)
+    pitch_angle = _pos_to_angle(position[1], image_size[1], VERTICAL_FOV)
     print(f'angle to turn: (x={yaw_angle}, y={pitch_angle})')
 
     current_yaw_angle = _constrain_angle(current_yaw_angle+yaw_angle)

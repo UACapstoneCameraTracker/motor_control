@@ -18,12 +18,12 @@ pi.set_PWM_frequency(YAW_MOTOR_PWM_PIN, PWM_FREQUENCY)
 
 
 def move_yaw(angle: float) -> int:
-    dc = int(-0.13 * angle + 26.8)
+    dc = int(-0.13 * angle + 25.8)
     pi.set_PWM_dutycycle(YAW_MOTOR_PWM_PIN, dc)
     return dc
 
 
 def move_pitch(angle: float) -> int:
-    dc = int(-0.13 * angle + 25.8)
+    dc = int(-0.13 * angle + 26.8)
     pi.set_PWM_dutycycle(PITCH_MOTOR_PWM_PIN, dc)
     return dc
