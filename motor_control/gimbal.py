@@ -47,7 +47,9 @@ def move_to(position: Tuple[int, int]):
     motor.move_yaw(current_yaw_angle)
     motor.move_pitch(current_pitch_angle)
 
-    time.sleep(motor.moving_time(max(abs(yaw_angle), abs(pitch_angle))))
+    sleep_time = motor.moving_time(max(abs(yaw_angle), abs(pitch_angle)))
+    time.sleep(sleep_time)
+    print(f'time to sleep: {sleep_time}')
 
 
 def reset_position():
