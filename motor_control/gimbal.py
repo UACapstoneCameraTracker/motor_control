@@ -11,15 +11,12 @@ v
 y
 
 """
-
+import time
 from typing import Tuple
 from enum import Enum
 import numpy as np
+from motor_control import motor
 
-from .motor import (
-    move_pitch,
-    move_yaw
-)
 
 HORIZONTAL_FOV = 46.5
 VERTICAL_FOV = 34.5
@@ -47,8 +44,10 @@ def move_to(position: Tuple[int, int]):
     current_yaw_angle = _constrain_angle(current_yaw_angle+yaw_angle)
     current_pitch_angle = _constrain_angle(current_pitch_angle+pitch_angle)
 
-    move_yaw(current_yaw_angle)
-    move_pitch(current_pitch_angle)
+    motor.move_yaw(current_yaw_angle)
+    motor.move_pitch(current_pitch_angle)
+
+    time.sleep(motor.moving_time(max(abs(yaw_angle), abs(pitch_angle))))
 
 
 def reset_position():
@@ -56,8 +55,10 @@ def reset_position():
     current_yaw_angle = MAX_ANGLE/2
     current_pitch_angle = MAX_ANGLE/2
 
-    move_yaw(current_yaw_angle)
-    move_pitch(current_pitch_angle)
+    motor.move_yaw(current_yaw_angle)
+    motor.move_pitch(current_pitch_angle)
+
+    time.sleep(motor.moving_time(60))
 
 
 def _constrain_angle(angle: float) -> float:
