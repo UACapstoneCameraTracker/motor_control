@@ -18,10 +18,8 @@ import numpy as np
 from motor_control import motor
 
 
-# HORIZONTAL_FOV = 46.5
-# VERTICAL_FOV = 34.5
-HORIZONTAL_FOV = 40
-VERTICAL_FOV = 30
+HORIZONTAL_FOV = 46.5
+VERTICAL_FOV = 34.5
 
 MAX_ANGLE = 120
 ANGLE_STEP = 20
@@ -37,7 +35,7 @@ def init_gimbal(imagesize: Tuple[int, int]):
     reset_position()
 
 
-def move_to(position: Tuple[int, int]):
+def move_to(position: Tuple[int, int], sleep: bool = True):
     global current_pitch_angle
     global current_yaw_angle
 
@@ -51,10 +49,11 @@ def move_to(position: Tuple[int, int]):
     motor.move_yaw(current_yaw_angle)
     motor.move_pitch(current_pitch_angle)
 
-    agl = max(abs(yaw_angle), abs(pitch_angle))
-    sleep_time = motor.moving_time(agl) + _shake_compensation(agl)
-    time.sleep(sleep_time)
-    print(f'time to sleep: {sleep_time}')
+    if sleep:
+        agl = max(abs(yaw_angle), abs(pitch_angle))
+        sleep_time = motor.moving_time(agl) + _shake_compensation(agl)
+        time.sleep(sleep_time)
+        print(f'time to sleep: {sleep_time}')
 
 
 def reset_position():
@@ -84,4 +83,4 @@ def _pos_to_angle(pos: int, pos_max: int, fov: float) -> float:
 
 
 def _shake_compensation(angle_delta):
-    return 3 * np.tanh(0.025 * angle_delta)
+    return 2 * np.tanh(0.025 * angle_delta)
