@@ -20,8 +20,9 @@ from motor_control import motor
 
 # HORIZONTAL_FOV = 46.5
 # VERTICAL_FOV = 34.5
-HORIZONTAL_FOV = 30
+HORIZONTAL_FOV = 40
 VERTICAL_FOV = 30
+
 MAX_ANGLE = 120
 ANGLE_STEP = 20
 
@@ -77,7 +78,7 @@ def _constrain_angle(angle: float) -> float:
 
 def _pos_to_angle(pos: int, pos_max: int, fov: float) -> float:
     d = pos - pos_max/2
-    angle = np.arctan(2 * np.tan(np.radians(fov)) / pos_max * d)
+    angle = np.arctan(2 * d * np.tan(np.radians(fov/2)) / pos_max)
     angle = np.degrees(angle)
     return angle
 
