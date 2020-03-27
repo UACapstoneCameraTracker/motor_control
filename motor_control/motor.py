@@ -10,7 +10,7 @@ PWM_FREQUENCY = 50
 
 # as per specification: 0.17
 SPEED_S_PER_DEGREE = 0.25 / 60
-TURNING_DELAY_ADDON = 0.1
+TURNING_DELAY_ADDON = 0.3
 
 
 pi = pigpio.pi()

@@ -18,9 +18,12 @@ import numpy as np
 from motor_control import motor
 
 
-HORIZONTAL_FOV = 46.5
-VERTICAL_FOV = 34.5
+# HORIZONTAL_FOV = 46.5
+# VERTICAL_FOV = 34.5
+HORIZONTAL_FOV = 30
+VERTICAL_FOV = 30
 MAX_ANGLE = 120
+ANGLE_STEP = 20
 
 current_yaw_angle = MAX_ANGLE/2
 current_pitch_angle = MAX_ANGLE/2
@@ -47,7 +50,8 @@ def move_to(position: Tuple[int, int]):
     motor.move_yaw(current_yaw_angle)
     motor.move_pitch(current_pitch_angle)
 
-    sleep_time = motor.moving_time(max(abs(yaw_angle), abs(pitch_angle)))
+    agl = max(abs(yaw_angle), abs(pitch_angle))
+    sleep_time = motor.moving_time(agl) + _shake_compensation(agl)
     time.sleep(sleep_time)
     print(f'time to sleep: {sleep_time}')
 
@@ -76,3 +80,7 @@ def _pos_to_angle(pos: int, pos_max: int, fov: float) -> float:
     angle = np.arctan(2 * np.tan(np.radians(fov)) / pos_max * d)
     angle = np.degrees(angle)
     return angle
+
+
+def _shake_compensation(angle_delta):
+    return 3 * np.tanh(0.025 * angle_delta)
